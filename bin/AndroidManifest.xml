@@ -1,0 +1,102 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wolfgames.glbasics"
+    android:versionCode="1"
+    android:versionName="1.0" >
+    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="22" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.wolfgames.glbasics.GLBasicsStarter"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"
+            android:configChanges="keyboard|keyboardHidden|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".GlSurfaceViewTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="GL Surface View Test" >
+        </activity>
+        <activity
+            android:name=".GLGameTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="GL Game Test" >
+        </activity>
+        <activity
+            android:name=".FirstTriangleTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="First Triangle Test" >
+        </activity>
+        <activity
+            android:name=".ColoredTriangleTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Colored Triangle Test" >
+        </activity>
+        <activity
+            android:name=".TexturedTriangleTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Textured Triangle Test" >
+        </activity>
+        <activity
+            android:name=".IndexedTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Indexed Test" >
+        </activity>
+        <activity
+            android:name=".BlendingTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Blending Test" >
+        </activity>
+        <activity
+            android:name=".BobTest"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Bob Test" >
+        </activity>
+        <activity
+            android:name=".BobOptimization"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="Bob Optimization" >
+        </activity> 
+        <activity
+            android:name=".CannonTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Cannon Test" >
+        </activity>
+        <activity
+            android:name=".CannonGravityTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Cannon Gravity Test" >
+        </activity>
+        <activity
+            android:name=".CollisionTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Collision Test" >
+        </activity>
+        <activity
+            android:name=".Camera2DTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Camera2D Test" >
+        </activity>
+        <activity
+            android:name=".TextureAtlasTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Texture Atlas Test" >
+        </activity>
+        
+    </application>
+
+</manifest>
