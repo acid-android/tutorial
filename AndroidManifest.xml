@@ -101,6 +101,11 @@
             android:configChanges="keyboard|keyboardHidden"
             android:label="Sprite Batcher Test" >
         </activity>
+        <activity
+            android:name=".AnimationTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Animation Test" >
+        </activity>
         
     </application>
 
