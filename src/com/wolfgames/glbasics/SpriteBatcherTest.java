@@ -15,7 +15,6 @@ import com.wolfgames.framework.gl.SpriteBatcher;
 import com.wolfgames.framework.gl.TextureRegion;
 import com.wolfgames.framework.impl.GLGame;
 import com.wolfgames.framework.impl.GLGraphics;
-import com.wolfgames.framework.impl.Vertices;
 import com.wolfgames.framework.math.OverlapTester;
 import com.wolfgames.framework.math.Vector2;
 import com.wolfgames.gamedev2d.Cannon;
@@ -26,22 +25,23 @@ public class SpriteBatcherTest extends GLGame{
 	@Override
 	public Screen getStartScreen() {
 		// TODO Auto-generated method stub
-		return new Camera2DScreen(this);
+		return new SpriteBatcherScreen(this);
 	}
 	
-	class Camera2DScreen extends Screen {
+	class SpriteBatcherScreen extends Screen {
+		Camera2D camera;
 		final int NUM_TARGETS = 20;
-		final float WORLD_WIDTH = 9.6f;
-		final float WORLD_HEIGHT = 4.8f;
+		final float WORLD_WIDTH = 820.0f;
+		final float WORLD_HEIGHT = 460.0f;
 		GLGraphics glGraphics;
+		GL10 gl;
 		Cannon cannon;
 		DynamicGameObject ball;
 		List<GameObject> targets;
 		SpatialHashGrid grid;
-		Camera2D camera;
 		Vector2 center;
-		Texture texture;
 		
+		Texture texture;
 		
 		TextureRegion cannonRegion;
 		TextureRegion ballRegion;
@@ -49,63 +49,33 @@ public class SpriteBatcherTest extends GLGame{
 		SpriteBatcher batcher;
 		
 		Vector2 touchPos = new Vector2();
-		Vector2 gravity = new Vector2(0, -10);
+		Vector2 gravity = new Vector2(0, -600);
 		
-		
-		public Camera2DScreen(Game game) {
-			// TODO Auto-generated constructor stub
+		public SpriteBatcherScreen(Game game) {
 			super(game);
 			glGraphics = ((GLGame)game).getGLGraphics();
+			gl = glGraphics.getGL();
+			
 			camera = new Camera2D(glGraphics, WORLD_WIDTH, WORLD_HEIGHT);
 			center = new Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-			
-			batcher = new SpriteBatcher(glGraphics, 100);
-			grid = new SpatialHashGrid(WORLD_WIDTH, WORLD_HEIGHT, 2.5f);
-			for(int  i = 0; i < NUM_TARGETS; i++) {
-				GameObject target = new GameObject((float)Math.random() * WORLD_WIDTH, (float)Math.random() * WORLD_HEIGHT, 0.5f, 0.5f);
+			cannon = new Cannon(0, 0, 128, 64.0f);
+			ball = new DynamicGameObject(0, 0, 16.0f, 16.0f);
+			targets = new ArrayList<GameObject>(NUM_TARGETS);
+			grid = new SpatialHashGrid(WORLD_WIDTH, WORLD_HEIGHT, 64);
+			for(int i = 0; i < NUM_TARGETS; i++) {
+				GameObject target = new GameObject((float)Math.random() * WORLD_WIDTH,
+												   (float)Math.random() * WORLD_HEIGHT,
+												   50.0f, 50.0f);
 				grid.insertStaticObjects(target);
 				targets.add(target);
 			}
 			
-			cannonVertices = new Vertices(glGraphics, 4, 6, false, true);
-			cannonVertices.setVertices(new float[] {
-					-0.5f, -0.25f, 0.0f, 0.5f,
-					0.5f, -0.25f, 1.0f, 0.5f,
-					0.5f, 0.25f, 1.0f, 0.0f,
-					-0.5f, 0.25f, 0.0f, 0.0f
-			}, 0, 16);
-			cannonVertices.setIndices(new short[]{
-					0, 1, 2, 2, 3, 0
-			}, 0, 6);
+			batcher = new SpriteBatcher(glGraphics, 100);	
 			
-			ballVertices = new Vertices(glGraphics, 4, 6, false, true);
-			ballVertices.setVertices(new float[] {
-					-0.1f, -0.1f, 0.0f, 0.75f,
-					0.1f, -0.1f, 0.25f, 0.75f,
-					0.1f, 0.1f, 0.25f, 0.5f,
-					-0.1f, 0.1f, 0.0f, 0.5f
-			}, 0, 16);
-			
-			ballVertices.setIndices(new short[] {
-					0, 1, 2, 2, 3, 0
-			}, 0, 6);
-			
-			targetVertices = new Vertices(glGraphics, 4, 6, false, true);
-			targetVertices.setVertices(new float [] {
-					-0.25f, -0.25f, 0.5f, 1.0f,
-					0.25f, -0.25f, 1.0f, 1.0f,
-					0.25f, 0.25f, 1.0f, 0.5f,
-					-0.25f, 0.25f, 0.5f, 0.5f
-			}, 0, 16);
-			
-			targetVertices.setIndices(new short[] {
-					0, 1, 2, 2, 3, 0
-			}, 0, 6);
 		}
 		
 		@Override
 		public void update(float deltaTime) {
-			// TODO Auto-generated method stub
 			List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
 			game.getInput().getKeyEvents();
 			
@@ -121,11 +91,15 @@ public class SpriteBatcherTest extends GLGame{
 					float radians = cannon.angle * Vector2.TO_RADIANS;
 					float ballSpeed = touchPos.len() * 2;
 					ball.position.set(cannon.position);
-					ball.velocity.x = (float) Math.cos(radians) * ballSpeed;
-					ball.velocity.y = (float) Math.sin(radians) * ballSpeed;
-					ball.bounds.lowerLeft.set(ball.position.x - 0.1f, ball.position.y - 0.1f);
- 				}
+					
+					ball.velocity.x = (float)Math.cos(radians) * ballSpeed;
+					ball.velocity.y = (float)Math.sin(radians) * ballSpeed;
+					
+					ball.bounds.lowerLeft.set(ball.position.x - 8.0f, ball.position.y - 8.0f);
+				}
 			}
+			
+
 			
 			ball.velocity.add(gravity.x * deltaTime, gravity.y * deltaTime);
 			ball.position.add(ball.velocity.x * deltaTime, ball.velocity.y * deltaTime);
@@ -133,6 +107,7 @@ public class SpriteBatcherTest extends GLGame{
 			
 			List<GameObject> colliders = grid.getPotentialColliders(ball);
 			len = colliders.size();
+			
 			for(int i = 0; i < len; i++) {
 				GameObject collider = colliders.get(i);
 				if(OverlapTester.overlapRectangles(ball.bounds, collider.bounds)) {
@@ -144,7 +119,8 @@ public class SpriteBatcherTest extends GLGame{
 			if(ball.position.y > 0) {
 				camera.position.set(center);
 				camera.zoom = 1 + ball.position.y / WORLD_HEIGHT;
-			} else {
+			}
+			else {
 				camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 				camera.zoom = 1;
 			}
@@ -152,26 +128,25 @@ public class SpriteBatcherTest extends GLGame{
 		
 		@Override
 		public void present(float deltaTime) {
-			// TODO Auto-generated method stub
-			GL10 gl = glGraphics.getGL();
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 			camera.setViewportAndMatrices();
 			
-			//targets
 			gl.glEnable(GL10.GL_BLEND);
 			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 			gl.glEnable(GL10.GL_TEXTURE_2D);
+			
+			                               // End Text Rendering        
 			
 			batcher.beginBatch(texture);
 			
 			int len = targets.size();
 			for(int i = 0; i < len; i++) {
 				GameObject target = targets.get(i);
-				batcher.drawSprite(target.position.x, target.position.y, 0.5f, 0.5f, bobRegion);
+				batcher.drawSprite(target.position.x, target.position.y, 50.0f, 50.0f, bobRegion);
 			}
-			
-			batcher.drawSprite(ball.position.x,  ball.position.y, 0.2f, 0.2f, ballRegion);
-			batcher.drawSprite(cannon.position.x, cannon.position.y, 1, 0.5f, cannon.angle, cannonRegion);
+
+			batcher.drawSprite(ball.position.x, ball.position.y, 16.0f, 16.0f, ballRegion);
+			batcher.drawSprite(cannon.position.x, cannon.position.y, 128, 64.0f, cannon.angle, cannonRegion);
 			batcher.endBatch();
 		}
 
@@ -183,7 +158,6 @@ public class SpriteBatcherTest extends GLGame{
 
 		@Override
 		public void resume() {
-			// TODO Auto-generated method stub
 			texture = new Texture(((GLGame)game), "atlas.png");
 			cannonRegion = new TextureRegion(texture, 0, 0, 64, 32);
 			ballRegion = new TextureRegion(texture, 0, 32, 16, 16);

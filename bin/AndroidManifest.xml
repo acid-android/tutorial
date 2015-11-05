@@ -96,6 +96,11 @@
             android:configChanges="keyboard|keyboardHidden"
             android:label="Texture Atlas Test" >
         </activity>
+        <activity
+            android:name=".SpriteBatcherTest"
+            android:configChanges="keyboard|keyboardHidden"
+            android:label="Sprite Batcher Test" >
+        </activity>
         
     </application>
 
